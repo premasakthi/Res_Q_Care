@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQCare – Emergency Medical Card</title>
+  <meta name="description" content="Official ResQCare Emergency Medical ID Record for immediate first-responder triage access.">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: #f1f5f9;
+      padding: 24px 16px;
+    }
+    .emergency-card-container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 2px solid #e2e8f0;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .emergency-card-header {
+      background: linear-gradient(135deg, #0a2540 0%, #dc2626 100%);
+      color: #ffffff;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .blood-badge-large {
+      background: #ffffff;
+      color: #dc2626;
+      font-size: 1.5rem;
+      font-weight: 800;
+      padding: 6px 18px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .emergency-section {
+      padding: 20px 28px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .emergency-alert-strip {
+      background: #fee2e2;
+      border-left: 5px solid #dc2626;
+      padding: 14px 20px;
+      color: #7f1d1d;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .data-row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .data-label {
+      width: 170px;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .data-value {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .call-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #059669;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+    .call-btn:hover {
+      background: #047857;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div style="max-width: 680px; margin: 0 auto 14px auto; display: flex; justify-content: space-between; align-items: center;">
+    <a href="index.html#client" style="color: var(--primary-navy); text-decoration: none; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 6px;">
+      ← Back to ResQCare Portal
+    </a>
+    <button class="btn btn-outline btn-sm active" id="toggleSimBtn" onclick="window.ResQSim.toggleDrawer()" style="font-size: 0.8rem; padding: 5px 12px; background:#fff;">
+      📟 Simulator
+    </button>
+  </div>
+
+  <div class="emergency-card-container">
+    
+    <!-- Emergency Header -->
+    <div class="emergency-card-header">
+      <div>
+        <div style="font-size:0.8rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; opacity:0.9;">
+          EMERGENCY MEDICAL ID • FIRST RESPONDER ACCESS
+        </div>
+        <h1 style="color:#ffffff; font-size:1.85rem; margin-top:4px;" id="qrPatientName">Eleanor Vance</h1>
+        <div style="font-size:0.9rem; opacity:0.9;">Patient ID: <strong>RQ-1024</strong> • Age: 78 • Female</div>
+      </div>
+
+      <div class="blood-badge-large" id="qrPatientBlood">
+        O+
+      </div>
+    </div>
+
+    <!-- Alert Strip: Severe Allergies -->
+    <div class="emergency-alert-strip">
+      ⚠️ SEVERE ALLERGIES: <span id="qrPatientAllergies">Penicillin, Aspirin, Shellfish</span>
+    </div>
+
+    <!-- Section 1: Critical Emergency Data -->
+    <div class="emergency-section">
+      <h3 style="font-size:1.15rem; color:var(--primary-navy); margin-bottom:14px;">⚡ Critical Medical Directives</h3>
+
+      <div class="data-row">
+        <div class="data-label">Critical Medications:</div>
+        <div class="data-value" style="color:#dc2626; font-weight:700;" id="qrPatientCriticalMeds">
+          Nitroglycerin sublingual PRN, Warfarin 5mg daily
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-label">Medical Conditions:</div>
+        <div class="data-value" id="qrPatientConditions">
+          Hypertension, Mild Congestive Heart Failure, Osteoporosis
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-label">Major Surgeries:</div>
+        <div class="data-value" id="qrPatientSurgeries">
+          Coronary Artery Bypass Graft (2018), Hip Replacement (2021)
+        </div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-label">Routine Medicines:</div>
+        <div class="data-value" id="qrPatientRoutineMeds">
+          Lisinopril 10mg, Metoprolol 25mg, Calcium + Vitamin D
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Emergency Contacts -->
+    <div class="emergency-section">
+      <h3 style="font-size:1.15rem; color:var(--primary-navy); margin-bottom:14px;">📞 Immediate Emergency Contacts</h3>
+
+      <div style="display:flex; flex-direction:column; gap:12px;" id="qrContactsContainer">
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px 16px; border-radius:8px;">
+          <div>
+            <strong>David Vance</strong> <span style="color:var(--text-muted); font-size:0.85rem;">(Son - Primary)</span>
+            <div style="font-size:0.9rem; margin-top:2px;">+1 (555) 492-1084</div>
+          </div>
+          <a href="tel:+15554921084" class="call-btn">📞 Call Now</a>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:12px 16px; border-radius:8px;">
+          <div>
+            <strong>Clara Vance-Hayes</strong> <span style="color:var(--text-muted); font-size:0.85rem;">(Daughter)</span>
+            <div style="font-size:0.9rem; margin-top:2px;">+1 (555) 773-9201</div>
+          </div>
+          <a href="tel:+15557739201" class="call-btn">📞 Call Now</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Physician & Hospital Details -->
+    <div class="emergency-section">
+      <h3 style="font-size:1.15rem; color:var(--primary-navy); margin-bottom:14px;">🏥 Designated Care Provider</h3>
+
+      <div class="data-row">
+        <div class="data-label">Registered Hospital:</div>
+        <div class="data-value">Metropolitan Emergency Hospital & Trauma Center</div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-label">Hospital ER Hotline:</div>
+        <div class="data-value"><a href="tel:+15559110001" style="color:#dc2626; font-weight:700;">+1 (555) 911-0001 (24/7)</a></div>
+      </div>
+
+      <div class="data-row">
+        <div class="data-label">Attending Doctor:</div>
+        <div class="data-value" id="qrPatientDoctor">Dr. Sarah Jenkins (+1 555-902-3341)</div>
+      </div>
+    </div>
+
+    <!-- Footer verification -->
+    <div style="background:#f8fafc; padding:16px 28px; display:flex; justify-content:space-between; align-items:center; font-size:0.82rem; color:var(--text-muted);">
+      <div>Verified by <strong>ResQCare Telemetry Network</strong></div>
+      <div>Device: <code>ESP32-RQ-882</code></div>
+    </div>
+
+  </div>
+
+  <script>
+    // Hydrate from localStorage if custom updates were made in the app
+    const saved = localStorage.getItem('resqcare_patient_profile');
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.fullName) document.getElementById('qrPatientName').textContent = data.fullName;
+        if (data.bloodGroup) document.getElementById('qrPatientBlood').textContent = data.bloodGroup;
+        if (data.allergies) document.getElementById('qrPatientAllergies').textContent = data.allergies;
+        if (data.criticalMeds) document.getElementById('qrPatientCriticalMeds').textContent = data.criticalMeds;
+        if (data.conditions) document.getElementById('qrPatientConditions').textContent = data.conditions;
+        if (data.surgeries) document.getElementById('qrPatientSurgeries').textContent = data.surgeries;
+        if (data.currentMeds) document.getElementById('qrPatientRoutineMeds').textContent = data.currentMeds;
+        if (data.doctorName) document.getElementById('qrPatientDoctor').textContent = `${data.doctorName} (${data.doctorContact || ''})`;
+      } catch (e) {
+        console.warn('Could not parse profile', e);
+      }
+    }
+  </script>
+
+  <!-- ====================================================================
+       FLOATING HARDWARE SIMULATION CONTROL DRAWER (DEMO MODE)
+       ==================================================================== -->
+  <aside id="demoSimDrawer" class="demo-sim-drawer" aria-label="ESP32 Hardware Simulator">
+    <div class="demo-sim-header">
+      <div class="demo-sim-title" onclick="window.ResQSim.toggleCollapse()" title="Click to minimize or expand">
+        <span>📟</span>
+        <span>ESP32 Hardware Simulator</span>
+      </div>
+      <div class="demo-sim-header-right">
+        <span id="simDrawerStatus" class="badge badge-normal">NORMAL</span>
+        <div class="demo-sim-actions">
+          <button class="sim-ctrl-btn" id="simCollapseBtn" onclick="window.ResQSim.toggleCollapse()" title="Minimize / Expand Drawer" aria-label="Minimize or Expand">
+            <span id="simCollapseIcon" class="sim-ctrl-icon">−</span>
+          </button>
+          <button class="sim-ctrl-btn close" id="simCloseBtn" onclick="window.ResQSim.closeDrawer()" title="Close Hardware Simulator" aria-label="Close">
+            <span class="sim-ctrl-icon">&times;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-sim-body">
+      
+      <!-- Heart Rate Slider -->
+      <div class="sim-slider-row">
+        <div class="sim-slider-label">
+          <span>Heart Rate Simulator</span>
+          <strong id="simHrVal">72 BPM</strong>
+        </div>
+        <input type="range" id="simHrSlider" class="sim-slider" min="40" max="160" value="72" oninput="window.ResQSim.setHeartRate(this.value)">
+      </div>
+
+      <!-- SpO2 Slider -->
+      <div class="sim-slider-row">
+        <div class="sim-slider-label">
+          <span>SpO₂ Oxygen Saturation</span>
+          <strong id="simSpo2Val">98%</strong>
+        </div>
+        <input type="range" id="simSpo2Slider" class="sim-slider" min="75" max="100" value="98" oninput="window.ResQSim.setSpO2(this.value)">
+      </div>
+
+      <!-- Hardware Action Buttons -->
+      <div class="sim-button-grid">
+        <button class="sim-btn danger" onclick="window.ResQSim.triggerFallEvent()">
+          ⚠️ Trigger Fall (MPU6050)
+        </button>
+        <button class="sim-btn danger" onclick="window.ResQSim.triggerManualSOS()">
+          🆘 Press SOS Button
+        </button>
+      </div>
+
+      <div class="sim-button-grid">
+        <button class="sim-btn warning" onclick="window.ResQSim.setHeartRate(135)">
+          ⚡ High HR (135 BPM)
+        </button>
+        <button class="sim-btn warning" onclick="window.ResQSim.setSpO2(86)">
+          💨 Low SpO₂ (86%)
+        </button>
+      </div>
+
+      <div class="sim-button-grid full">
+        <button class="sim-btn success" onclick="window.ResQSim.resolveEmergency()">
+          ✓ Reset / Resolve to Normal
+        </button>
+      </div>
+
+      <!-- Telemetry Stream Logs -->
+      <div>
+        <span style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase;">IoT Telemetry JSON Packets:</span>
+        <div class="sim-telemetry-box" id="simTelemetryLogs">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Floating Simulator Launcher Pill (Visible when drawer is closed) -->
+  <button id="simLauncherBtn" class="demo-sim-launcher hidden" onclick="window.ResQSim.openDrawer()" title="Open ESP32 Hardware Simulator" aria-label="Open Hardware Simulator">
+    <span class="sim-launcher-indicator normal" id="simLauncherIndicator"></span>
+    <span>📟 Hardware Simulator</span>
+    <span id="simLauncherBadge" class="badge badge-normal">NORMAL</span>
+  </button>
+
+  <script src="js/audio-alerts.js"></script>
+  <script src="js/demo-simulator.js"></script>
+</body>
+</html>
