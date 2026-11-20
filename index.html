@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResQCare – Smart Elderly Emergency Care System</title>
+  <meta name="description" content="Next-generation elderly emergency care wearable system with QR Medical ID, fall detection, real-time vitals monitoring, Spark analytics, and instant hospital dispatch.">
+
+  <!-- Typography (Plus Jakarta Sans & Outfit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for GPS Emergency Mapping -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Design System & Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Sticky Header Navigation -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" onclick="window.ResQRouter.navigate('landing')">
+        <div class="brand-icon">✚</div>
+        <div>
+          ResQCare
+          <span class="brand-tagline-badge">Emergency Care IoT</span>
+        </div>
+      </a>
+
+      <!-- Primary Navigation Links -->
+      <ul class="nav-links">
+        <li><button class="nav-item-btn active" data-view="landing" onclick="window.ResQRouter.navigate('landing')">Home</button></li>
+        <li><button class="nav-item-btn" data-view="client" onclick="window.ResQRouter.navigate('client')">Client Portal</button></li>
+        <li><button class="nav-item-btn" data-view="hospital" onclick="window.ResQRouter.navigate('hospital')">Hospital Portal</button></li>
+        <li><button class="nav-item-btn" data-view="analytics" onclick="window.ResQRouter.navigate('analytics')">Spark Analytics</button></li>
+      </ul>
+
+      <!-- Navbar Action Utilities -->
+      <div class="nav-actions">
+        <button class="btn btn-outline btn-sm active" id="toggleSimBtn" title="Toggle ESP32 Live Hardware Drawer" onclick="window.ResQSim.toggleDrawer()">
+          ⚡ Live Hardware
+        </button>
+        <button class="btn btn-outline btn-sm" id="toggleSeniorModeBtn" title="Toggle larger text for seniors">
+          👁️ Senior Mode
+        </button>
+        <button class="btn btn-outline btn-sm" id="toggleAudioBtn" title="Toggle emergency audio alerts">
+          🔊 Audio: ON
+        </button>
+        <button class="btn btn-emergency btn-sm" onclick="window.ResQSim.triggerManualSOS()">
+          🆘 SOS Test
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-wrapper">
+
+    <!-- ====================================================================
+         1. LANDING PAGE VIEW
+         ==================================================================== -->
+    <section id="view-landing" class="page-view active">
+      
+      <!-- Hero Product Section -->
+      <div class="hero-section">
+        <div class="hero-content">
+          <h1>
+            Faster Medical Support <br>
+            <span class="gradient-text">When It Matters Most</span>
+          </h1>
+          <p class="hero-tagline">
+            ResQCare is a life-saving smart elderly wearable wristband that connects continuous vital monitoring, MPU6050 fall detection, and instant QR Medical ID directly to hospital trauma centers and family members.
+          </p>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-primary btn-lg" onclick="window.ResQRouter.navigate('client')">
+              👤 Open Client Portal
+            </button>
+            <button class="btn btn-emergency btn-lg" onclick="window.ResQRouter.navigate('hospital')">
+              🏥 Hospital ER Command
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="window.ResQSim.connectUsbSerial()">
+              🔌 Connect Live USB
+            </button>
+          </div>
+
+          <div class="hero-trust-bar">
+            <div class="trust-item"><span>⚡</span> <strong>&lt; 30s</strong> Hospital Alert</div>
+            <div class="trust-item"><span>❤️</span> <strong>MAX30102</strong> Live Vitals</div>
+            <div class="trust-item"><span>🛡️</span> <strong>MPU6050</strong> Fall Detection</div>
+            <div class="trust-item"><span>📍</span> <strong>NEO-6M</strong> GPS Dispatch</div>
+          </div>
+        </div>
+
+        <div class="hero-image-wrapper">
+          <img src="assets/images/wristband-hero.jpg" alt="ResQCare Smart Elderly Emergency Wristband" id="heroProductImg">
+          <div class="hero-live-pill">
+            <span class="badge-dot" style="background:#10b981;"></span>
+            LIVE IoT Telemetry Active
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works Flow (Directly following the system architecture) -->
+      <div class="workflow-section">
+        <div class="section-header">
+          <h2>End-to-End Emergency Response Flow</h2>
+          <p>From sensor detection on the senior's wristband to Apache Spark anomaly evaluation and ambulance dispatch.</p>
+        </div>
+
+        <div class="workflow-steps-flex">
+          <div class="workflow-step">
+            <div class="workflow-step-num">1</div>
+            <h4>Wearable Wristband</h4>
+            <p>ESP32 captures continuous Heart Rate, SpO₂, GPS, and 6-axis motion via MPU6050.</p>
+          </div>
+          <div class="workflow-arrow">➜</div>
+          <div class="workflow-step">
+            <div class="workflow-step-num">2</div>
+            <h4>Wi-Fi & GSM Gateway</h4>
+            <p>Encrypted telemetry transmitted via REST API to Spring Boot 3 & MySQL backend.</p>
+          </div>
+          <div class="workflow-arrow">➜</div>
+          <div class="workflow-step">
+            <div class="workflow-step-num">3</div>
+            <h4>Spark Analytics</h4>
+            <p>Apache Spark & Scala detects trends, fall impacts, sustained arrhythmia, and risk scores.</p>
+          </div>
+          <div class="workflow-arrow">➜</div>
+          <div class="workflow-step">
+            <div class="workflow-step-num">4</div>
+            <h4>Hospital & Family Alert</h4>
+            <p>Audible siren triggers on ER dashboard with GPS coordinates and instant medical dossier.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Features Grid -->
+      <div class="features-section">
+        <div class="section-header">
+          <h2>Designed for Seniors, Built for Hospitals</h2>
+          <p>Every feature is calibrated for instantaneous emergency triage and family reassurance.</p>
+        </div>
+
+        <div class="feature-cards-grid">
+          <div class="feature-card">
+            <div class="feature-icon-box">🪪</div>
+            <h3>QR Medical ID</h3>
+            <p>Scannable badge provides first responders immediate access to allergies, blood group, medications, and emergency contacts without exposing full database records.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box red">🚨</div>
+            <h3>Intelligent Fall Detection</h3>
+            <p>MPU6050 accelerometer algorithm distinguishes normal motion from high-g impact spikes and sustained post-fall immobility, broadcasting auto-alerts.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box green">💓</div>
+            <h3>Heart Rate & SpO₂ Tracking</h3>
+            <p>Integrated MAX30102 PPG sensor tracks pulse and oxygen saturation in real-time. Automatically flags tachycardia, bradycardia, or hypoxia desaturation.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box red">🆘</div>
+            <h3>Manual SOS Push Button</h3>
+            <p>Tactile emergency button on the wristband triggers an immediate highest-priority alert with audible beacon and GPS coordinate transmission.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">📍</div>
+            <h3>NEO-6M GPS Location</h3>
+            <p>Pinpoints the patient's coordinates on interactive maps with real-time routing directly from the hospital trauma response center.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box amber">📊</div>
+            <h3>Spark Predictive Insights</h3>
+            <p>Apache Spark batch and stream analytics calculate Cardiovascular Stability and Fall Risk scores to alert doctors before acute incidents happen.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         2. CLIENT / PATIENT PORTAL VIEW
+         ==================================================================== -->
+    <section id="view-client" class="page-view">
+      
+      <!-- Client Portal Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2>Patient Health Portal</h2>
+          <p>Welcome back, <strong>Eleanor Vance</strong> (Patient ID: <code>RQ-1024</code>)</p>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <span class="badge badge-warning" id="clientWristbandStatus">
+            <span class="badge-dot" style="background:#ef4444;"></span> Wristband: Disconnected (No Signal)
+          </span>
+          <span class="badge badge-warning" id="clientEmergencyStatus">
+            <span class="badge-dot" style="background:#94a3b8;"></span> NO SIGNAL
+          </span>
+        </div>
+      </div>
+
+      <!-- Sub-Navigation for Client Portal -->
+      <div class="portal-subnav">
+        <button class="portal-subnav-btn active" data-subview="dashboard">📊 Live Dashboard</button>
+        <button class="portal-subnav-btn" data-subview="profile">📋 Medical Profile</button>
+        <button class="portal-subnav-btn" data-subview="contacts">👥 Emergency Contacts</button>
+        <button class="portal-subnav-btn" data-subview="hospital">🏥 Registered Hospital</button>
+        <button class="portal-subnav-btn" data-subview="qr">🪪 QR Medical ID Badge</button>
+      </div>
+
+      <!-- Subview 1: Client Dashboard -->
+      <div id="client-dashboard" class="client-subview">
+        
+        <!-- Health Status & Telemetry Cards -->
+        <div class="vitals-grid">
+          
+          <!-- Heart Rate Card with Animated ECG -->
+          <div class="vital-card" id="clientHrCard">
+            <div class="vital-card-header">
+              <span class="vital-title">Heart Rate</span>
+              <span class="heart-icon">❤️</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value" id="clientLiveHr">--</span>
+              <span class="vital-unit">BPM</span>
+            </div>
+            <canvas class="ecg-canvas" id="clientEcgCanvas"></canvas>
+          </div>
+
+          <!-- SpO2 Card -->
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Blood Oxygen (SpO₂)</span>
+              <span style="font-size:1.3rem;">💨</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value emerald" id="clientLiveSpo2">--%</span>
+            </div>
+            <p style="font-size:0.85rem; margin-top:14px; color:var(--text-muted); font-weight:600;">
+              Hardware disconnected
+            </p>
+          </div>
+
+          <!-- Activity & Fall State -->
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Current Activity</span>
+              <span style="font-size:1.3rem;">🚶</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value" style="font-size:1.5rem; color:#64748b;" id="clientLiveActivity">DISCONNECTED</span>
+            </div>
+            <p style="font-size:0.85rem; margin-top:14px; color:var(--text-muted);">
+              MPU6050 Motion Guard Active
+            </p>
+          </div>
+
+          <!-- Wristband Hardware Status -->
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Device Telemetry</span>
+              <span style="font-size:1.3rem;">🔋</span>
+            </div>
+            <div style="font-size:0.95rem; display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+              <div>Battery: <strong id="clientLiveBattery">88%</strong></div>
+              <div>Last Sync: <strong id="clientLiveSync">Just now</strong></div>
+              <div>Firmware: <code>v1.4.2</code></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Emergency History Log -->
+        <div class="card">
+          <div class="card-header">
+            <h3><span>📜</span> Recent Emergency & Alert History</h3>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.92rem; text-align:left;">
+              <thead>
+                <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted);">
+                  <th style="padding:10px;">Event ID</th>
+                  <th style="padding:10px;">Event Type</th>
+                  <th style="padding:10px;">Vitals Snapshot</th>
+                  <th style="padding:10px;">Timestamp</th>
+                  <th style="padding:10px;">Status</th>
+                </tr>
+              </thead>
+              <tbody id="clientEmergencyTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Subview 2: Medical Profile Form -->
+      <div id="client-profile" class="client-subview" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <h3><span>📋</span> Patient Medical Dossier (Emergency Critical Record)</h3>
+            <span class="badge badge-normal">Confidential & Encrypted</span>
+          </div>
+
+          <form id="medicalProfileForm">
+            <div class="form-grid">
+              
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="fullName" class="form-input" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Blood Group</label>
+                <select name="bloodGroup" class="form-select" required>
+                  <option value="O+">O Positive (O+)</option>
+                  <option value="O-">O Negative (O-)</option>
+                  <option value="A+">A Positive (A+)</option>
+                  <option value="A-">A Negative (A-)</option>
+                  <option value="B+">B Positive (B+)</option>
+                  <option value="B-">B Negative (B-)</option>
+                  <option value="AB+">AB Positive (AB+)</option>
+                  <option value="AB-">AB Negative (AB-)</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Known Allergies (Severe reactions prioritized)</label>
+                <input type="text" name="allergies" class="form-input" placeholder="e.g. Penicillin, Aspirin, Shellfish">
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Existing Medical Conditions</label>
+                <input type="text" name="conditions" class="form-input" placeholder="e.g. Hypertension, Congestive Heart Failure, Osteoporosis">
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Major Surgeries & Medical History</label>
+                <input type="text" name="surgeries" class="form-input" placeholder="e.g. Coronary Artery Bypass Graft (2018), Hip Replacement (2021)">
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Critical / Complicated Medicines (High Risk)</label>
+                <input type="text" name="criticalMeds" class="form-input" placeholder="e.g. Nitroglycerin sublingual PRN, Warfarin 5mg daily">
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Routine Current Medications</label>
+                <input type="text" name="currentMeds" class="form-input" placeholder="e.g. Lisinopril 10mg, Metoprolol 25mg">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Primary Care Doctor Name</label>
+                <input type="text" name="doctorName" class="form-input" placeholder="Dr. Sarah Jenkins">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Doctor Emergency Contact</label>
+                <input type="text" name="doctorContact" class="form-input" placeholder="+1 (555) 902-3341">
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Additional Medical Notes / Directives</label>
+                <textarea name="notes" class="form-textarea" placeholder="Postural hypotension upon standing. Fall risk alert."></textarea>
+              </div>
+
+            </div>
+
+            <div style="margin-top:24px; display:flex; gap:12px;">
+              <button type="submit" class="btn btn-primary">💾 Save & Update Profile</button>
+              <button type="button" class="btn btn-outline" onclick="window.ClientApp.renderProfile()">↺ Reset Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Subview 3: Emergency Contacts -->
+      <div id="client-contacts" class="client-subview" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <h3><span>👥</span> Emergency Family Contacts (Auto-Notified During Incidents)</h3>
+          </div>
+
+          <div class="contacts-list" id="clientContactsList" style="margin-bottom:28px;">
+            <!-- Rendered by JS -->
+          </div>
+
+          <h4 style="margin-bottom:14px; font-size:1.1rem;">Add New Emergency Contact</h4>
+          <form id="addContactForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Contact Full Name</label>
+                <input type="text" name="contactName" class="form-input" required placeholder="e.g. David Vance">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Relationship</label>
+                <input type="text" name="relationship" class="form-input" required placeholder="e.g. Son / Daughter">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Primary Phone Number</label>
+                <input type="tel" name="phone" class="form-input" required placeholder="+1 (555) 492-1084">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Alternate Phone (Optional)</label>
+                <input type="tel" name="altPhone" class="form-input" placeholder="+1 (555) 492-1085">
+              </div>
+            </div>
+            <div style="margin-top:18px;">
+              <button type="submit" class="btn btn-primary">➕ Add Emergency Contact</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Subview 4: Registered Hospital -->
+      <div id="client-hospital" class="client-subview" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <h3><span>🏥</span> Designated Emergency Receiving Hospital</h3>
+          </div>
+          <div id="clientHospitalInfo">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Subview 5: QR Medical ID Badge -->
+      <div id="client-qr" class="client-subview" style="display:none;">
+        <div class="card">
+          <div class="card-header">
+            <h3><span>🪪</span> Official ResQCare QR Medical ID Badge</h3>
+            <button class="btn btn-primary btn-sm" id="printQrBtn">🖨️ Print Emergency Card</button>
+          </div>
+
+          <p>
+            This secure QR code is printed on the physical ResQCare wristband. When scanned by EMTs or bystanders, it displays only life-critical triage information without requiring system login.
+          </p>
+
+          <div class="qr-badge-container">
+            <div class="qr-code-wrapper">
+              <canvas id="qrCanvas"></canvas>
+              <div class="qr-badge-label">PATIENT ID: RQ-1024</div>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Scan in emergency for medical details</p>
+            </div>
+
+            <div class="qr-badge-details">
+              <h3>Eleanor Vance</h3>
+              <p style="font-weight:600; color:var(--accent-cyan);">Senior Medical Registry • ResQCare Verified</p>
+
+              <div class="qr-data-preview-grid">
+                <div class="qr-preview-item">
+                  <span class="qr-preview-label">Blood Type</span>
+                  <span class="qr-preview-val" id="qrBadgeBlood">O+</span>
+                </div>
+                <div class="qr-preview-item">
+                  <span class="qr-preview-label">Primary Hospital</span>
+                  <span class="qr-preview-val">Metropolitan Trauma Center</span>
+                </div>
+                <div class="qr-preview-item">
+                  <span class="qr-preview-label">Severe Allergies</span>
+                  <span class="qr-preview-val" id="qrBadgeAllergies">Penicillin, Aspirin, Shellfish</span>
+                </div>
+                <div class="qr-preview-item">
+                  <span class="qr-preview-label">Critical Meds</span>
+                  <span class="qr-preview-val" id="qrBadgeMeds">Nitroglycerin, Warfarin</span>
+                </div>
+              </div>
+
+              <div style="display:flex; gap:12px; margin-top:14px;">
+                <a href="qr-emergency.html?patientId=RQ-1024" target="_blank" class="btn btn-outline" id="qrTestLink">
+                  ↗ Open Standalone QR Page
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         3. HOSPITAL ER COMMAND PORTAL VIEW
+         ==================================================================== -->
+    <section id="view-hospital" class="page-view">
+      
+      <!-- Hospital Header -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2>Metropolitan Emergency Hospital & Trauma Center</h2>
+          <p>ER Command & Telemetry Triage Desk • On-Duty: <strong>Dr. Alistair Sterling, MD</strong> (<code>STF-ER-409</code>)</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="badge badge-normal"><span class="badge-dot"></span> Socket Feed: Online</span>
+        </div>
+      </div>
+
+      <!-- Hospital Summary KPI Stats -->
+      <div class="hospital-top-stats">
+        <div class="stat-box">
+          <div>
+            <div class="stat-num" style="color:var(--emergency-crimson);" id="statActiveEmergencies">0</div>
+            <div class="stat-label">Active Emergencies</div>
+          </div>
+          <span style="font-size:1.8rem;">🚨</span>
+        </div>
+
+        <div class="stat-box">
+          <div>
+            <div class="stat-num" id="statMonitoredPatients">148</div>
+            <div class="stat-label">Monitored Patients</div>
+          </div>
+          <span style="font-size:1.8rem;">👥</span>
+        </div>
+
+        <div class="stat-box">
+          <div>
+            <div class="stat-num" style="color:var(--safe-emerald);" id="statResolvedEmergencies">1</div>
+            <div class="stat-label">Resolved Today</div>
+          </div>
+          <span style="font-size:1.8rem;">✅</span>
+        </div>
+
+        <div class="stat-box">
+          <div>
+            <div class="stat-num" style="color:var(--accent-cyan);">2.4m</div>
+            <div class="stat-label">Avg EMS Dispatch</div>
+          </div>
+          <span style="font-size:1.8rem;">⏱️</span>
+        </div>
+      </div>
+
+      <!-- Prominent Emergency Alert Banner (Shown during active emergency) -->
+      <div id="emergencyAlertBanner" class="emergency-alert-banner" style="display:none;">
+        <!-- Dynamically injected with pulse and action buttons -->
+      </div>
+
+      <!-- Leaflet Interactive GPS Emergency Map Card -->
+      <div class="card">
+        <div class="card-header">
+          <h3><span>📍</span> Live GPS Emergency Dispatch & Ambulance Tracking</h3>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span style="font-size:0.85rem; color:var(--text-muted);" id="mapCoordsDisplay">40.751300, -73.983180</span>
+            <a href="https://www.google.com/maps" target="_blank" id="openGoogleMapsBtn" class="btn btn-outline btn-sm">
+              🗺️ Open in Google Maps
+            </a>
+          </div>
+        </div>
+
+        <div class="hospital-map-container">
+          <div id="leafletMap"></div>
+        </div>
+      </div>
+
+      <!-- Searchable Patient Directory -->
+      <div class="card">
+        <div class="card-header">
+          <h3><span>🏥</span> Monitored Patients Directory</h3>
+          <input type="text" id="hospitalPatientSearch" class="form-input" style="max-width:280px;" placeholder="Search ID, name, or wristband...">
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.92rem; text-align:left;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border-subtle); color:var(--text-muted);">
+                <th style="padding:10px;">Patient ID</th>
+                <th style="padding:10px;">Name</th>
+                <th style="padding:10px;">Age</th>
+                <th style="padding:10px;">Wristband MAC</th>
+                <th style="padding:10px;">Status</th>
+                <th style="padding:10px;">Live HR</th>
+                <th style="padding:10px;">Live SpO₂</th>
+                <th style="padding:10px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="hospitalPatientsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         4. APACHE SPARK ANALYTICS VIEW
+         ==================================================================== -->
+    <section id="view-analytics" class="page-view">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2>Apache Spark + Scala Health Risk Analytics Engine</h2>
+            <p>Big-data statistical processing, 5-minute sliding window vitals aggregation, and predictive health risk assessment.</p>
+          </div>
+          <span class="badge badge-normal">⚡ Spark 3.5.1 Active</span>
+        </div>
+
+        <!-- Spark Metrics Grid -->
+        <div class="vitals-grid">
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Cardiovascular Stability Index</span>
+              <span>📈</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value emerald">94.2</span>
+              <span class="vital-unit">/100</span>
+            </div>
+            <p style="font-size:0.85rem; margin-top:10px; color:var(--safe-emerald); font-weight:600;">
+              Normal resting sinus rhythm profile
+            </p>
+          </div>
+
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Predicted Fall Propensity</span>
+              <span>🛡️</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value" style="color:var(--warning-amber);">Moderate</span>
+            </div>
+            <p style="font-size:0.85rem; margin-top:10px; color:var(--text-muted);">
+              Postural hypotension flags detected upon waking
+            </p>
+          </div>
+
+          <div class="vital-card">
+            <div class="vital-card-header">
+              <span class="vital-title">Windowed Aggregation</span>
+              <span>⏱️</span>
+            </div>
+            <div class="vital-value-row">
+              <span class="vital-value" style="font-size:2rem;">5-min</span>
+            </div>
+            <p style="font-size:0.85rem; margin-top:10px; color:var(--text-muted);">
+              1,240 micro-samples averaged per interval
+            </p>
+          </div>
+        </div>
+
+        <div style="background:var(--bg-page); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:16px;">
+          <h4 style="margin-bottom:8px;">Spark Structured Streaming Pipeline Configuration</h4>
+          <pre style="background:#0a2540; color:#38bdf8; padding:16px; border-radius:8px; font-size:0.85rem; overflow-x:auto;">
+val healthRiskDF = windowedVitals
+  .withColumn("tachycardia_alert", when($"avg_heart_rate" > 115, true).otherwise(false))
+  .withColumn("hypoxia_alert", when($"min_spo2" < 90, true).otherwise(false))
+  .withColumn("cardiac_instability_score", 
+    round(abs($"avg_heart_rate" - 72) * 0.4 + (100 - $"avg_spo2") * 1.5, 2))
+  .withColumn("health_risk_level",
+    when($"tachycardia_alert" || $"hypoxia_alert" || $"fall_events_count" > 0, "HIGH_RISK")
+    .otherwise("STABLE"))
+          </pre>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====================================================================
+       LIVE ESP32 HARDWARE MONITOR DRAWER (100% REAL HARDWARE)
+       ==================================================================== -->
+  <aside id="demoSimDrawer" class="demo-sim-drawer" aria-label="ESP32 Live Hardware Unit">
+    <div class="demo-sim-header">
+      <div class="demo-sim-title" onclick="window.ResQSim.toggleCollapse()" title="Click to minimize or expand">
+        <span>⚡</span>
+        <span>ESP32 Live Hardware</span>
+      </div>
+      <div class="demo-sim-header-right">
+        <span id="hwConnStatus" class="badge badge-normal" style="font-size:0.75rem;">⚪ Offline</span>
+        <span id="simDrawerStatus" class="badge badge-normal">NORMAL</span>
+        <div class="demo-sim-actions">
+          <button class="sim-ctrl-btn" id="simCollapseBtn" onclick="window.ResQSim.toggleCollapse()" title="Minimize / Expand Drawer" aria-label="Minimize or Expand">
+            <span id="simCollapseIcon" class="sim-ctrl-icon">−</span>
+          </button>
+          <button class="sim-ctrl-btn close" id="simCloseBtn" onclick="window.ResQSim.closeDrawer()" title="Close Live Hardware Drawer" aria-label="Close">
+            <span class="sim-ctrl-icon">&times;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-sim-body">
+      
+      <!-- USB One-Click Web Serial Connection Button -->
+      <div style="margin-bottom:12px;">
+        <button class="sim-btn success" id="btnConnectUsb" style="width:100%; font-size:0.95rem; font-weight:700; padding:10px 14px;" onclick="window.ResQSim.connectUsbSerial()">
+          🔌 Connect Live USB Device
+        </button>
+        <div style="font-size:0.75rem; color:#64748b; margin-top:4px; text-align:center;">
+          Direct 115200 baud USB stream from COM13 (Chrome / Edge)
+        </div>
+      </div>
+
+      <!-- Live Sensor Telemetry Cards -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600; text-transform:uppercase;">Heart Rate</div>
+          <strong id="simHrVal" style="font-size:1.3rem; color:#0f172a;">74 BPM</strong>
+        </div>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; text-align:center;">
+          <div style="font-size:0.75rem; color:#64748b; font-weight:600; text-transform:uppercase;">SpO₂ Oxygen</div>
+          <strong id="simSpo2Val" style="font-size:1.3rem; color:#0284c7;">98%</strong>
+        </div>
+      </div>
+
+      <!-- MPU-6050 Accelerometer Live Reading -->
+      <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+          <span style="font-size:0.75rem; color:#64748b; font-weight:600; text-transform:uppercase;">MPU6050 Motion</span>
+          <span id="hwActivityVal" style="font-size:0.8rem; font-weight:700; color:#10b981;">RESTING</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; color:#475569;">G-Force (Acc):</span>
+          <strong id="hwGForceVal" style="font-size:1.1rem; color:#0f172a;">1.00 g</strong>
+        </div>
+      </div>
+
+      <!-- Hardware Action Indicator -->
+      <div style="background:#f1f5f9; border-radius:8px; padding:10px; margin-bottom:12px; font-size:0.8rem; color:#334155;">
+        <div style="font-weight:700; margin-bottom:4px;">📌 Physical Controls:</div>
+        <div>• <strong>Yellow Button:</strong> Tactile Hardware SOS</div>
+        <div>• <strong>Drop/Impact:</strong> MPU6050 Real Fall Detection</div>
+      </div>
+
+      <div class="sim-button-grid full">
+        <button class="sim-btn success" onclick="window.ResQSim.resolveEmergency()">
+          ✓ Silence / Reset Alarm
+        </button>
+      </div>
+
+      <!-- Telemetry Stream Logs -->
+      <div>
+        <span style="font-size:0.75rem; color:#94a3b8; font-weight:600; text-transform:uppercase;">Live Hardware Serial Console:</span>
+        <div class="sim-telemetry-box" id="simTelemetryLogs">
+          <!-- Dynamically populated from live serial/backend -->
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Floating Launcher Pill (Visible when drawer is closed) -->
+  <button id="simLauncherBtn" class="demo-sim-launcher hidden" onclick="window.ResQSim.openDrawer()" title="Open ESP32 Live Hardware Drawer" aria-label="Open Live Hardware Drawer">
+    <span class="sim-launcher-indicator normal" id="simLauncherIndicator"></span>
+    <span>⚡ Live Hardware</span>
+    <span id="simLauncherBadge" class="badge badge-normal">NORMAL</span>
+  </button>
+
+  <!-- ====================================================================
+       TRIAGE PATIENT DOSSIER MODAL
+       ==================================================================== -->
+  <div id="triageModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 style="font-size:1.3rem;">📋 Emergency Triage Patient Record</h3>
+        <button class="modal-close-btn" id="closeTriageModal">&times;</button>
+      </div>
+      <div class="modal-body" id="triageModalContent">
+        <!-- Dynamically injected -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="document.getElementById('triageModal').classList.remove('open')">Close</button>
+        <button class="btn btn-emergency" onclick="window.HospitalApp.dispatchAmbulance('EMG-ACTIVE'); document.getElementById('triageModal').classList.remove('open')">
+          🚑 Dispatch Ambulance Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>ResQCare</strong> – Smart Elderly Emergency Care System. Built with ESP32 IoT, Spring Boot 3, Apache Spark, and MySQL.
+      </div>
+      <div>
+        Tagline: <em>"Faster Medical Support When It Matters Most"</em>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/audio-alerts.js"></script>
+  <script src="js/qr-generator.js"></script>
+  <script src="js/demo-simulator.js"></script>
+  <script src="js/client-portal.js"></script>
+  <script src="js/hospital-portal.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
